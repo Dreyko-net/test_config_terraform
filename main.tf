@@ -60,7 +60,7 @@ resource "aws_launch_configuration" "lc_web_server" {
     security_groups = [aws_security_group.sg_web_server.id]
     user_data = file("user_data.sh")
     lifecycle {
-      create_befor_destroy = true
+      create_before_destroy = true
     }
 }
 
@@ -78,6 +78,6 @@ resource "aws_autoscaling_group" "ag_web_server" {
       name = [aws_autoscaling_group.ag_web_server.name]
     }
 lifecycle {
-  create_befor_destroy = true
+  create_before_destroy = true
 }
 }
