@@ -1,10 +1,10 @@
 provider "aws" {
-  region = "eu-centrel-1"
+  region = "eu-central-1"
 }
 
 data "aws_availability_zones" "avalible" {}
 data "aws_ami" "current_amazon_linux" {
-  owner = ["amazon"]
+  owners = ["amazon"]
   most_recent = true
   filter {
     name = "name"

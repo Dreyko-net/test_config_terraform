@@ -1,9 +1,9 @@
 #--------------Network---------------------
 resource "aws_default_subnet" "default_subnet_1" {
-    availability_zone = data.aws_availability_zones.avalible.name[0]
+    availability_zone = data.aws_availability_zones.avalible.names[0]
 }
 resource "aws_default_subnet" "default_subnet_2" {
-    availability_zone = data.aws_availability_zones.avalible.name[1]
+    availability_zone = data.aws_availability_zones.avalible.names[1]
 }
 
 resource "aws_security_group" "sg_web_server" {
@@ -30,8 +30,8 @@ resource "aws_security_group" "sg_web_server" {
 }
 
 resource "aws_elb" "lb_web_server" {
-    name = "lb_ha_web_server"
-    availability_zones = [data.aws_availability_zones.avalible.name[0],data.aws_availability_zones.avalible.name[1]]
+    name = "lb-ha-web-server"
+    availability_zones = [data.aws_availability_zones.avalible.names[0],data.aws_availability_zones.avalible.names[1]]
     security_groups = [aws_security_group.sg_web_server.id]
     listener {
       instance_port = 80
@@ -43,11 +43,11 @@ health_check {
   healthy_threshold = 2
   unhealthy_threshold =2
   timeout = 3
-  target = "http:80"
+  target = "HTTP:80/"
   interval = 10
 }
 tags = {
-  name = "lb_ha_web_server"
+  Name = "lb_ha_web_server"
 }
 }
 
@@ -65,8 +65,8 @@ resource "aws_launch_configuration" "lc_web_server" {
 }
 
 resource "aws_autoscaling_group" "ag_web_server" {
-    name = "AG_${aws_autoscaling_group.lc_web_server.name}"
-    launch_configuration = aws_autoscaling_group.lc_web_server.name
+    name = "AG-${aws_launch_configuration.lc_web_server.name}"
+    launch_configuration = aws_launch_configuration.lc_web_server.name
     min_size = 2
     max_size = 2
     min_elb_capacity = 2
@@ -74,8 +74,10 @@ resource "aws_autoscaling_group" "ag_web_server" {
     vpc_zone_identifier = [aws_default_subnet.default_subnet_1.id,aws_default_subnet.default_subnet_2.id]
     load_balancers = [aws_elb.lb_web_server.name]
 
-    tags = {
-      name = [aws_autoscaling_group.ag_web_server.name]
+    tag  {
+      key = "name" 
+	value = "AS-Web-Server"
+propagate_at_launch = true
     }
 lifecycle {
   create_before_destroy = true
