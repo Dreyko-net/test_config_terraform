@@ -65,7 +65,7 @@ resource "aws_launch_configuration" "lc_web_server" {
 }
 
 resource "aws_autoscaling_group" "ag_web_server" {
-    name = "AG-${aws_launch_configuration.lc_web_server.name}"
+    name = "ASG-${aws_launch_configuration.lc_web_server.name}"
     launch_configuration = aws_launch_configuration.lc_web_server.name
     min_size = 2
     max_size = 2
@@ -75,8 +75,8 @@ resource "aws_autoscaling_group" "ag_web_server" {
     load_balancers = [aws_elb.lb_web_server.name]
 
     tag  {
-      key = "name" 
-	value = "AS-Web-Server"
+      key = "name"
+	value = "ASG-Web-Server"
 propagate_at_launch = true
     }
 lifecycle {
